@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Food Expiry Alert System</title>
+  <style>
+    /* ---------------------- Background Slideshow ---------------------- */
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      z-index: -2;
+      animation: bgSlideShow 24s infinite linear;
+      filter: none;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.45);
+      z-index: -1;
+    }
+
+    @keyframes bgSlideShow {
+      0%  { background-image: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1400&q=80'); }
+      25% { background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80'); }
+      50% { background-image: url('https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=1400&q=80'); }
+      75% { background-image: url('https://images.unsplash.com/photo-1478144592103-25e218a04891?auto=format&fit=crop&w=1400&q=80'); }
+      100% { background-image: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1400&q=80'); }
+    }
+
+    /* ---------------------- Card Styling ---------------------- */
+    .container {
+      width: 380px;
+      max-width: 90%;
+      padding: 30px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 
+        0 8px 30px rgba(0,0,0,0.25),
+        inset 2px 2px 6px rgba(255,255,255,0.6),
+        inset -3px -3px 6px rgba(0,0,0,0.15);
+      text-align: center;
+      transform: scale(0.85);
+      opacity: 0;
+      animation: zoomInCard 0.7s ease-out forwards;
+    }
+
+    @keyframes zoomInCard {
+      from { transform: scale(0.85); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    h2 { margin-bottom: 20px; color: #2c3e50; font-weight: 600; }
+    h3 { color: #3c8dbc; margin-bottom: 10px; }
+
+    /* ---------------------- Inputs & Select ---------------------- */
+    input, select {
+      width: 95%;            /* match button width */
+      padding: 12px;
+      margin: 12px 0;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      background: rgba(255,255,255,0.8);
+      box-shadow:
+        2px 2px 5px rgba(0,0,0,0.12),
+        -2px -2px 5px rgba(255,255,255,0.7);
+      transition: 0.25s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      background: white;
+      box-shadow:
+        0 0 12px rgba(52,152,219,0.45),
+        2px 2px 6px rgba(0,0,0,0.15);
+    }
+
+    /* ---------------------- Password Eye Icon ---------------------- */
+    .password-wrapper {
+      position: relative;
+      width: 75%;        /* same as inputs & button */
+      margin: 12px 0 12px 12px;   /* top | right | bottom | left */
+      display: inline-block;
+    }
+
+    .password-wrapper input {
+      width: 100%;
+      padding-right: 45px; /* space for eye icon */
+    }
+
+    .toggle-eye {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #555;
+    }
+
+    /* ---------------------- Button ---------------------- */
+    button {
+      width: 95%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: #3498db;
+      color: white;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(52,152,219,0.4);
+      transition: 0.25s ease;
+    }
+
+    button:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(52,152,219,0.55);
+    }
+
+    .hidden { display: none; }
+
+    #passwordHelp {
+      font-size: 12px;
+      color: red;
+      text-align: left;
+      width: 95%;
+      margin: -5px auto 5px auto;
+      line-height: 16px;
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>🍴 Food Expiry Alert System</h2>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <h3>Login</h3>
+
+      <select id="loginCountryCode" class="countryCodeSelect"></select>
+      <input type="text" id="loginPhone" placeholder="Enter 10-digit phone number" maxlength="10" />
+
+      <!-- Password with eye -->
+      <div class="password-wrapper">
+        <input type="password" id="loginPassword" placeholder="Password" />
+        <span class="toggle-eye" onclick="togglePassword('loginPassword', this)">👁</span>
+      </div>
+
+      <button onclick="loginUser()">Login</button>
+
+      <p>Don’t have an account? <a onclick="toggleForm()">Register</a></p>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" class="hidden">
+      <h3>Register</h3>
+
+      <input type="text" id="regName" placeholder="Full Name" />
+      <select id="regCountryCode" class="countryCodeSelect"></select>
+      <input type="text" id="regPhone" placeholder="Enter 10-digit phone number" maxlength="10" />
+
+      <!-- Password with eye -->
+      <div class="password-wrapper">
+        <input type="password" id="regPassword" placeholder="Password" />
+        <span class="toggle-eye" onclick="togglePassword('regPassword', this)">👁</span>
+      </div>
+
+      <small id="passwordHelp">
+        Password must be at least 6 characters and include: <br>
+        • 1 uppercase letter <br>
+        • 1 lowercase letter <br>
+        • 1 digit <br>
+        • 1 special character
+      </small>
+
+      <button onclick="registerUser()">Register</button>
+
+      <p>Already have an account? <a onclick="toggleForm()">Login</a></p>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="login.js"></script>
+
+  <!-- Password eye toggle logic -->
+  <script>
+    function togglePassword(id, eyeIcon) {
+      const input = document.getElementById(id);
+
+      if (input.type === "password") {
+        input.type = "text";
+        eyeIcon.textContent = "👁‍🗨";  // open
+      } else {
+        input.type = "password";
+        eyeIcon.textContent = "👁";    // closed
+      }
+    }
+  </script>
+
+</body>
+</html>
